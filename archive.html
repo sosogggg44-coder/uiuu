@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أرشيف التعليقات</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark: #07070f;
+            --card: rgba(255, 255, 255, 0.04);
+            --border: rgba(255, 255, 255, 0.08);
+            --purple: #7c3aed;
+            --red: #ff2d55;
+            --text: #e8e8f0;
+            --muted: #6b6b8a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 70% 40% at 10% 10%, rgba(124, 58, 237, 0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 90% 90%, rgba(255, 45, 85, 0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 0 28px;
+            height: 64px;
+            background: rgba(7, 7, 15, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--purple), var(--red), transparent);
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: var(--muted);
+            font-size: 14px;
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #fff, #c0c0e0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-count {
+            margin-right: auto;
+            background: rgba(124, 58, 237, 0.15);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            color: #a78bfa;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 4px 14px;
+            border-radius: 30px;
+        }
+
+        /* ─── شريط البحث ─── */
+        .toolbar {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            gap: 12px;
+            padding: 20px 28px;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 11px 44px 11px 16px;
+            color: var(--text);
+            font-family: 'Tajawal', sans-serif;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-box input:focus {
+            border-color: rgba(124, 58, 237, 0.5);
+        }
+
+        .search-box input::placeholder {
+            color: var(--muted);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            font-size: 16px;
+        }
+
+        /* ─── جدول التعليقات ─── */
+        .table-wrap {
+            position: relative;
+            z-index: 1;
+            padding: 0 28px 28px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(13, 13, 31, 0.6);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+        }
+
+        thead tr {
+            background: rgba(124, 58, 237, 0.1);
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            padding: 14px 16px;
+            text-align: right;
+            font-size: 13px;
+            font-weight: 700;
+            color: #a78bfa;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .td-num {
+            color: var(--muted);
+            font-size: 12px;
+            width: 50px;
+        }
+
+        .author-name {
+            font-weight: 700;
+            background: linear-gradient(90deg, #f472b6, #a78bfa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            white-space: nowrap;
+        }
+
+        .msg-text {
+            color: #c8c8e0;
+            line-height: 1.5;
+            word-break: break-all;
+            overflow-wrap: break-word;
+        }
+
+        .time-tag {
+            font-size: 12px;
+            color: var(--muted);
+            white-space: nowrap;
+            direction: ltr;
+        }
+
+        /* ─── حالات فارغة / تحميل ─── */
+        .state-box {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--muted);
+        }
+
+        .state-box .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .state-box p {
+            font-size: 15px;
+        }
+
+        @media (max-width: 600px) {
+
+            header,
+            .toolbar,
+            .table-wrap {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .td-num {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <a class="back-btn" href="index.html">← العودة</a>
+        <span class="header-title">📦 أرشيف التعليقات</span>
+        <span class="header-count" id="header-count">جاري التحميل...</span>
+    </header>
+
+    <div class="toolbar">
+        <div class="search-box">
+            <input type="text" id="search" placeholder="ابحث باسم المستخدم أو نص التعليق...">
+            <span class="search-icon">🔍</span>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <div id="content">
+            <div class="state-box">
+                <span class="icon">⏳</span>
+                <p>جاري تحميل التعليقات من Supabase...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://amuopyagznrsyojqxaqp.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_VEEiRh3zLWxhzIwgJBcvLw_f0hABb0u";
+        const DELETED_PREFIX = "🗑️ [محذوف] ";
+        let allComments = [];
+        let lastTopId = 0;
+        let isFetching = false;
+
+        function esc(t) {
+            return String(t || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+
+        async function load() {
+            if (isFetching) return;
+            isFetching = true;
+            try {
+                // أحدث 5000 رسالة بترتيب id تنازلي (الأحدث أولاً في الجدول)
+                const res = await fetch(
+                    `${SUPABASE_URL}/rest/v1/comments?select=id,author,message,created_at&order=id.desc&limit=5000`,
+                    { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, Prefer: "count=exact" } }
+                );
+                const data = await res.json();
+                const topId = data[0]?.id || 0;
+                if (topId !== lastTopId) {
+                    lastTopId = topId;
+                    allComments = data;
+                    renderTable(allComments);
+                }
+            } catch (e) { console.error("Archive error:", e); }
+            finally { isFetching = false; }
+        }
+
+        function renderTable(data) {
+            const content = document.getElementById("content");
+            if (!content) return;
+            const valid = data.filter(c => c.message && c.message.trim());
+            if (!valid.length) {
+                content.innerHTML = `<div class="state-box"><span class="icon">💤</span><p>لا توجد تعليقات محفوظة بعد</p></div>`;
+                const ce = document.getElementById("header-count");
+                if (ce) ce.textContent = "0 تعليق";
+                return;
+            }
+            const rows = valid.map((c, i) => {
+                const t = new Date(c.created_at).toLocaleString("ar-IQ", {
+                    year: "numeric", month: "2-digit", day: "2-digit",
+                    hour: "2-digit", minute: "2-digit", hour12: true, timeZone: "Asia/Baghdad"
+                });
+                const isDeleted = c.message.startsWith(DELETED_PREFIX);
+                const msg = isDeleted ? c.message.slice(DELETED_PREFIX.length) : c.message;
+                const style = isDeleted ? 'text-decoration:line-through;opacity:0.45;' : '';
+                const badge = isDeleted ? '<span style="font-size:10px;color:#ff4444;border:1px solid #ff4444;border-radius:4px;padding:1px 5px;margin-left:4px;">🗑️</span>' : '';
+                return `<tr><td class="td-num">${i + 1}</td><td><span class="author-name">${esc(c.author)}</span></td><td class="msg-text" style="${style}">${badge}${esc(msg)}</td><td class="time-tag">${t}</td></tr>`;
+            }).join("");
+
+            content.innerHTML = `<table><thead><tr><th class="td-num">#</th><th>المستخدم</th><th>التعليق</th><th>الوقت (بغداد)</th></tr></thead><tbody>${rows}</tbody></table>`;
+            const ce = document.getElementById("header-count");
+            if (ce) ce.textContent = `${valid.length.toLocaleString("ar")} تعليق محفوظ | متصل ✅`;
+        }
+
+        document.getElementById("search")?.addEventListener("input", e => {
+            const val = e.target.value.toLowerCase().trim();
+            const filtered = allComments.filter(c =>
+                c.message && c.message.trim() && (
+                    (c.author || "").toLowerCase().includes(val) ||
+                    c.message.toLowerCase().includes(val)
+                )
+            );
+            renderTable(filtered);
+        });
+
+        load();
+        setInterval(load, 4000);
+    </script>
+</body>
+
+</html>
